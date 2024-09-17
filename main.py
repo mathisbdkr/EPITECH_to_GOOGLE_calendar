@@ -36,6 +36,7 @@ for epitech_account in epitech_accounts:
 
     # config
     EPITECH_COOKIE = epitech_account.get('epitech_cookie')
+    bypass_anti_ddos()
     EPITECH_LOGIN = get_epitech_login(EPITECH_COOKIE)
     CALENDAR_ID_EVENTS = extractCalendarID(epitech_account.get('calendarID_events'))
     CALENDAR_ID_TIMELINE = extractCalendarID(epitech_account.get('calendarID_timeline'))
