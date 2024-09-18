@@ -23,9 +23,12 @@ try:
     chromedriver_path = result.stdout.split(":")[1].strip()
 
     if not chromedriver_path:
-        print("Failed to locate the chromium.chromedriver path.")
-        print("    Is chrome installed ?")
-        exit(1)
+        result = subprocess.run([find_chromedriver_cmd, 'chromedriver'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        chromedriver_path = result.stdout.split(":")[1].strip()
+        if not chromedriver_path:
+            print("Failed to locate the chromium.chromedriver path.")
+            print("    Is chrome installed ?")
+            exit(1)
 
 except FileNotFoundError:
     print(find_chromedriver_cmd + ": command not found...")
