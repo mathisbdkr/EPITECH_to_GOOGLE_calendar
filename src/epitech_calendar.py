@@ -1,26 +1,48 @@
 #!/usr/bin/env python3
 
-import requests
 from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-import time
+import subprocess
 import json
+from sys import exit
+from time import sleep
 
-service = Service('/snap/bin/chromium.chromedriver')
+chromedriver_path = None
+find_chromedriver_cmd = "whereis"
+
+# get the chromium.chromedriver path
+try:
+    result = subprocess.run([find_chromedriver_cmd, 'chromium.chromedriver'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+    if result.stderr or not result.stdout.strip():
+        print(find_chromedriver_cmd + ": command not found...")
+        exit(1)
+
+    chromedriver_path = result.stdout.split(":")[1].strip()
+
+    if not chromedriver_path:
+        print("Failed to locate the chromium.chromedriver path.")
+        print("    Is chrome installed ?")
+        exit(1)
+
+except FileNotFoundError:
+    print(find_chromedriver_cmd + ": command not found...")
+    exit(1)
+
+
+service = Service(chromedriver_path)
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 driver = webdriver.Chrome(service=service, options=options)
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-}
-
+# initialize the connection with Epitech intra and wait for the end of the anti-ddos check
 def bypass_anti_ddos():
     url = 'https://intra.epitech.eu/'
     driver.get(url)
-    time.sleep(10)
+    sleep(10)
+
 
 def get_epitech_login(epitechCookie):
     url = 'https://intra.epitech.eu/user/?format=json'
