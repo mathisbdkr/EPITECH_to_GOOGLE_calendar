@@ -4,38 +4,13 @@ from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 import subprocess
 import json
 from sys import exit
 from time import sleep
 
-chromedriver_path = None
-find_chromedriver_cmd = "whereis"
-
-# get the chromium.chromedriver path
-try:
-    result = subprocess.run([find_chromedriver_cmd, 'chromium.chromedriver'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-    if result.stderr or not result.stdout.strip():
-        print(find_chromedriver_cmd + ": command not found...")
-        exit(1)
-
-    chromedriver_path = result.stdout.split(":")[1].strip()
-
-    if not chromedriver_path:
-        result = subprocess.run([find_chromedriver_cmd, 'chromedriver'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        chromedriver_path = result.stdout.split(":")[1].strip()
-        if not chromedriver_path:
-            print("Failed to locate the chromium.chromedriver path.")
-            print("    Is chrome installed ?")
-            exit(1)
-
-except FileNotFoundError:
-    print(find_chromedriver_cmd + ": command not found...")
-    exit(1)
-
-
-service = Service(chromedriver_path)
+service = Service(ChromeDriverManager().install())
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')
 driver = webdriver.Chrome(service=service, options=options)
